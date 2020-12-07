@@ -1,0 +1,9 @@
+{
+  "recommendations": [
+    "dbaeumer.vscode-eslint",
+    "hex-ci.stylelint-plus",
+  ],
+  "unwantedRecommendations": [
+    "hookyqr.beautify",
+  ]
+}

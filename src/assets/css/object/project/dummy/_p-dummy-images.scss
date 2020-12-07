@@ -1,0 +1,25 @@
+@charset "utf-8";
+@import "foundation/base.scss";
+
+.p-dummy-images {
+  @include mqpc() {
+    display: flex;
+  }
+  &__image {
+    display: block;
+    @include mqpc() {
+    }
+    &--image01 {
+      @include mqpc() {
+      }
+    }
+    &--image02 {
+      @include mqpc() {
+      }
+    }
+    &--image03 {
+      @include mqpc() {
+      }
+    }
+  }
+}

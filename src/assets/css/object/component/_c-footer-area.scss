@@ -1,0 +1,18 @@
+@charset "utf-8";
+@import "foundation/base.scss";
+
+.c-footer-area {
+  box-sizing: border-box;
+  height: 200px;
+  padding-top: 50px;
+  padding-bottom: 50px;
+  background: #ccc;
+  @include mqpc() {
+  }
+  &__copyright {
+    font-size: 14px;
+    text-align: center;
+    @include mqpc() {
+    }
+  }
+}

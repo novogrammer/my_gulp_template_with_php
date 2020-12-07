@@ -1,0 +1,27 @@
+@charset "utf-8";
+@import "foundation/base.scss";
+
+.p-dummy-background-images {
+  @include mqpc() {
+    display: flex;
+  }
+  &__image {
+    @include mqpc() {
+    }
+    &--image01 {
+      @include singleSprite("dummy/dummy-images__image--image01.png");
+      @include mqpc() {
+      }
+    }
+    &--image02 {
+      @include singleSprite("dummy/dummy-images__image--image02.png");
+      @include mqpc() {
+      }
+    }
+    &--image03 {
+      @include singleSprite("dummy/dummy-images__image--image03.png");
+      @include mqpc() {
+      }
+    }
+  }
+}

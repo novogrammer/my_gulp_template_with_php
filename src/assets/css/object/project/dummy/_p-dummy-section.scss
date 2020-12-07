@@ -1,0 +1,26 @@
+@charset "utf-8";
+@import "foundation/base.scss";
+
+//BEMの場合はこんな感じ
+.p-dummy-section {
+  background: #faa;
+  @include mqpc() {
+    background: #afa;
+  }
+
+  &__title {
+    //vwベースでレイアウトする場合、PSD上のpxから計算する。
+    font-size: 40px * $PX_TO_VW_SP;
+    line-height: 200%;
+    @include mqpc() {
+      font-size: 40px;
+    }
+  }
+  &__text {
+    font-size: 20px * $PX_TO_VW_SP;
+    line-height: 200%;
+    @include mqpc() {
+      font-size: 20px;
+    }
+  }
+}

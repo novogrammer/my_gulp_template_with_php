@@ -1,0 +1,7 @@
+//prefixは"p-"
+//重複する場合、componentへ移動させる
+
+//サブディレクトリを作り、prefixとして追加する
+//例えば"/object/project/dummy"のprefixは"p-dummy-"
+
+@import "./dummy/index";

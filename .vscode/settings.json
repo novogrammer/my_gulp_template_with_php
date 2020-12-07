@@ -1,0 +1,22 @@
+{
+  "beautify.ignore": [
+    "**/*"
+  ],
+  "css.validate": false,
+  "editor.tabSize": 2,
+  "editor.formatOnSave": true,
+  "editor.formatOnPaste": true,
+  "eslint.alwaysShowStatus": true,
+  "eslint.enable": true,
+  "eslint.format.enable": true,
+  "files.trimTrailingWhitespace": true,
+  "html.format.contentUnformatted": "pre, code, textarea, title, h1, h2, h3, h4, h5, h6, p",
+  "html.autoClosingTags": false,
+  "html.format.enable": false,
+  "html.format.wrapLineLength": 0,
+  "problems.showCurrentInStatus": true,
+  "scss.validate": false,
+  "stylelint.autoFixOnSave": true,
+  "stylelint.enable": true,
+  "stylelint.useLocal": true,
+}
