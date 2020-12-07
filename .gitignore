@@ -1,3 +1,7 @@
 node_modules
 .sass-cache
+
+dist-assets
+dist-html
+dist-php
 dist

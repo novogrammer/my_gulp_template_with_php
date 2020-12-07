@@ -34,17 +34,21 @@ const IS_DEBUG = true;
 const paths = {
   src: 'src/',
   dist: 'dist/',
+  dist_assets: 'dist-assets/',
+  dist_html: 'dist-html/',
+  dist_php: 'dist-php/',
   raw_contents: 'raw_contents/',
   scss: 'src/assets/css/',
-  css: 'dist/assets/css/',
+  css: 'dist-assets/assets/css/',
   pug: 'src/',
-  html: 'dist/',
+  html: 'dist-html/',
+  php: 'dist-php/',
   es6: 'src/assets/js/',
-  js: 'dist/assets/js/',
-  dist_image: 'dist/assets/img/',
+  js: 'dist-assets/assets/js/',
+  dist_image: 'dist-assets/assets/img/',
   src_image: 'src/assets/img/',
   src_lib: 'src/assets/lib/',
-  dist_lib: 'dist/assets/lib/',
+  dist_lib: 'dist-assets/assets/lib/',
 };
 
 
@@ -60,7 +64,7 @@ gulp.task('watch', () => {
     port: 3000,
     https: IS_HTTPS,
     server: {
-      baseDir: [paths.dist, paths.raw_contents],
+      baseDir: [paths.dist_html, paths.dist_assets, paths.raw_contents],
       routes: {
       },
     },
@@ -73,11 +77,17 @@ gulp.task('watch', () => {
   });
 });
 
-gulp.task('clean', () => del([paths.dist]));
+gulp.task('clean', () => del([
+  paths.dist_assets,
+  paths.dist_html,
+  paths.dist_php,
+  paths.dist,
+]));
 
 
 gulp.task('copy_image', () => gulp.src([`${paths.src_image}**`], { base: paths.src_image })
   .pipe(gulp.dest(paths.dist_image)));
+
 gulp.task('copy_lib', () => gulp.src([`${paths.src_lib}**`], { base: paths.src_lib })
   .pipe(gulp.dest(paths.dist_lib)));
 
@@ -118,26 +128,39 @@ gulp.task('scss', () => {
     .pipe(gulp.dest(paths.css));
 });
 
-gulp.task('pug', () => gulp
-  .src([`${paths.pug}**/*.pug`, `!${paths.pug}**/_*.pug`])
-  .pipe(plumber({
-    errorHandler: notify.onError('Error: <%= error.message %>'),
-  }))
-  .pipe(gulpFlatmap((stream, file) => stream
-    .pipe(pug({
-      pretty: true,
-      locals: {
-        relRoot: path.join('.', path.relative(path.dirname(file.path), paths.pug), '/'),
-      },
-      basedir: paths.pug,
-      // debug:true,
-      // compileDebug:true,
+
+function pugTaskInternal(isPHP) {
+  const destDir = isPHP ? paths.php : paths.html;
+  const extname = isPHP ? ".php" : ".html";
+  return gulp
+    .src([`${paths.pug}**/*.pug`, `!${paths.pug}**/_*.pug`])
+    .pipe(plumber({
+      errorHandler: notify.onError('Error: <%= error.message %>'),
     }))
-    .pipe(beautify({
-      // indent_inner_html:true,
-      indent_size: 2,
-    }))))
-  .pipe(gulp.dest(paths.html)));
+    .pipe(gulpFlatmap((stream, file) => stream
+      .pipe(pug({
+        pretty: true,
+        locals: {
+          isPHP,
+          relRoot: path.join('.', path.relative(path.dirname(file.path), paths.pug), '/'),
+        },
+        basedir: paths.pug,
+        // debug:true,
+        // compileDebug:true,
+      }))
+      .pipe(beautify({
+        // indent_inner_html:true,
+        indent_size: 2,
+      }))))
+    .pipe(rename({
+      extname,
+    }))
+    .pipe(gulp.dest(destDir))
+}
+
+gulp.task('pug-to-html', () => pugTaskInternal.call(null, false));
+gulp.task('pug-to-php', () => pugTaskInternal.call(null, true));
+gulp.task('pug', gulp.series('pug-to-html', 'pug-to-php'));
 
 
 function babelifyTaskInternal(full) {
@@ -182,9 +205,7 @@ gulp.task('babelify', () => babelifyTaskInternal.call(null, true));
 
 gulp.task('babelify-for-watch', () => babelifyTaskInternal.call(null, false));
 
-
-gulp.task('build', gulp.series(
-  'clean',
+gulp.task('build-each', gulp.series(
   gulp.parallel(
     'copy_image',
     'copy_lib',
@@ -198,7 +219,34 @@ gulp.task('build', gulp.series(
 ));
 
 
-gulp.task('default', gulp.series(
-  'build',
+gulp.task('publish-assets', () => {
+  return gulp.src([`${paths.dist_assets}**`], { base: paths.dist_assets })
+    .pipe(gulp.dest(paths.dist))
+});
+
+gulp.task('publish-php', () => {
+  return gulp.src([`${paths.dist_php}**`], { base: paths.dist_php })
+    .pipe(gulp.dest(paths.dist))
+});
+gulp.task('publish', gulp.series(
+  'publish-assets',
+  'publish-php',
+));
+
+
+gulp.task('build', gulp.series(
+  'clean',
+  'build-each',
+  'publish',
+));
+
+gulp.task('debug', gulp.series(
+  'clean',
+  'build-each',
   'watch',
+));
+
+
+gulp.task('default', gulp.series(
+  'debug',
 ));

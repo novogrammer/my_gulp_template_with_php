@@ -6,6 +6,9 @@
   "scripts": {
     "eslint": "eslint src/**/*.es6",
     "stylelint": "stylelint src/**/*.scss",
+    "start": "gulp",
+    "build": "gulp build",
+    "phpserver": "php -S localhost:8000 -t dist/",
     "test": "jest"
   },
   "author": "Yusuke Kawamoto <novogrammer@gmail.com>",

@@ -7,6 +7,14 @@ block append styles
 block append scripts
   script(src=relRoot+"assets/js/index.js")
 block main
+  if isPHP
+    p これはPHP用
+    p
+      |1+2=<?php echo 1+2; ?>
+  else
+    p これはHTML用
+    p
+      |1+2=?
   .p-dummy-background-images
     .p-dummy-background-images__image.p-dummy-background-images__image--image01 イメージ01
     .p-dummy-background-images__image.p-dummy-background-images__image--image02 イメージ02

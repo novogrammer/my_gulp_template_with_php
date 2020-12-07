@@ -32,9 +32,10 @@ html(lang="ja")
       script(src=relRoot+"assets/js/common.js")
   body
     .l-wrapper
-      .l-header
-        .c-header-logo
-          a(href=relRoot) ロゴ
+      if isPHP
+        |<?php include($_SERVER['DOCUMENT_ROOT']."/include/header.php") ?>
+      else
+        include /include/_header
       .l-main
         block main
       .l-footer.c-footer-area
