@@ -1,0 +1,7 @@
+
+mixin dummy-background-image(modifier,altText)
+  .p-dummy-background-images__image(class=`p-dummy-background-images__image--${modifier}`) #{altText}
+
+mixin dummy-image(modifier,altText)
+  img.p-dummy-images__image(class=`p-dummy-images__image--${modifier}` src=`${relRoot}assets/img/dummy/dummy-images__image--${modifier}.png` alt=altText)
+

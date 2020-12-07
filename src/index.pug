@@ -16,13 +16,13 @@ block main
     p
       |1+2=?
   .p-dummy-background-images
-    .p-dummy-background-images__image.p-dummy-background-images__image--image01 イメージ01
-    .p-dummy-background-images__image.p-dummy-background-images__image--image02 イメージ02
-    .p-dummy-background-images__image.p-dummy-background-images__image--image02 イメージ03
+    +dummy-background-image("image01","イメージ01")
+    +dummy-background-image("image02","イメージ02")
+    +dummy-background-image("image03","イメージ03")
   .p-dummy-images
-    img.p-dummy-images__image.p-dummy-images__image--image01(src=relRoot+"assets/img/dummy/dummy-images__image--image01.png" alt="イメージ01")
-    img.p-dummy-images__image.p-dummy-images__image--image02(src=relRoot+"assets/img/dummy/dummy-images__image--image02.png" alt="イメージ02")
-    img.p-dummy-images__image.p-dummy-images__image--image03(src=relRoot+"assets/img/dummy/dummy-images__image--image03.png" alt="イメージ03")
+    +dummy-image("image01","イメージ01")
+    +dummy-image("image02","イメージ02")
+    +dummy-image("image03","イメージ03")
   section.p-dummy-section
     h1.p-dummy-section__title ダミータイトル#[br.u-sp-inline]ダミータイトル
     p.p-dummy-section__text
