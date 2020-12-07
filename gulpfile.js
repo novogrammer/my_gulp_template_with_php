@@ -52,47 +52,22 @@ const paths = {
 };
 
 
-gulp.task('watch', () => {
-  gulp.watch([`${paths.src_image}**/*`], gulp.task('copy_image'));
-  gulp.watch([`${paths.scss}**/*.scss`], gulp.task('scss'));
-  gulp.watch([`${paths.pug}**/*.pug`], gulp.task('pug'));
-  // gulp.watch([paths.es6+"**/*.es6"],gulp.task('babel'))
-  gulp.watch([`${paths.es6}**/*.es6`], gulp.task('babelify-for-watch'));
-
-  browserSync({
-    notify: false,
-    port: 3000,
-    https: IS_HTTPS,
-    server: {
-      baseDir: [paths.dist_html, paths.dist_assets, paths.raw_contents],
-      routes: {
-      },
-    },
-    ghostMode: {
-      clicks: false,
-      forms: false,
-      scroll: false,
-    },
-    watch: true,
-  });
-});
-
-gulp.task('clean', () => del([
+const clean_task = () => del([
   paths.dist_assets,
   paths.dist_html,
   paths.dist_php,
   paths.dist,
-]));
+]);
 
 
-gulp.task('copy_image', () => gulp.src([`${paths.src_image}**`], { base: paths.src_image })
-  .pipe(gulp.dest(paths.dist_image)));
-
-gulp.task('copy_lib', () => gulp.src([`${paths.src_lib}**`], { base: paths.src_lib })
-  .pipe(gulp.dest(paths.dist_lib)));
+const copy_image_task = () => gulp.src([`${paths.src_image}**`], { base: paths.src_image })
+  .pipe(gulp.dest(paths.dist_image));
 
 
-gulp.task('scss', () => {
+const copy_lib_task = () => gulp.src([`${paths.src_lib}**`], { base: paths.src_lib })
+  .pipe(gulp.dest(paths.dist_lib));
+
+const scss_task = () => {
   const pathCssToImage = path.relative(paths.css, paths.dist_image);
   const cacheBusterString = `${Math.floor(Date.now() / 1000)}`;
   return gulp
@@ -126,7 +101,7 @@ gulp.task('scss', () => {
       }),
     )
     .pipe(gulp.dest(paths.css));
-});
+};
 
 
 function pugTaskInternal(isPHP) {
@@ -158,10 +133,10 @@ function pugTaskInternal(isPHP) {
     .pipe(gulp.dest(destDir))
 }
 
-gulp.task('pug-to-html', () => pugTaskInternal.call(null, false));
-gulp.task('pug-to-php', () => pugTaskInternal.call(null, true));
-gulp.task('pug', gulp.series('pug-to-html', 'pug-to-php'));
+const pug_to_html_task = () => pugTaskInternal.call(null, false);
+const pug_to_php_task = () => pugTaskInternal.call(null, true);
 
+const pug_task = gulp.series(pug_to_html_task, pug_to_php_task);
 
 function babelifyTaskInternal(full) {
   const source = full ? [`${paths.es6}**/*.es6`, `!${paths.es6}**/_*.es6`] : [`${paths.es6}**/*.es6`, `!${paths.es6}**/_*.es6`, `!${paths.es6}**/bundle.es6`];
@@ -201,52 +176,80 @@ function babelifyTaskInternal(full) {
     .pipe(gulp.dest(paths.js));
 }
 
-gulp.task('babelify', () => babelifyTaskInternal.call(null, true));
+const babelify_task = () => babelifyTaskInternal.call(null, true);
+const babelify_for_watch_task = () => babelifyTaskInternal.call(null, false);
 
-gulp.task('babelify-for-watch', () => babelifyTaskInternal.call(null, false));
-
-gulp.task('build-each', gulp.series(
+const build_each_task = gulp.series(
   gulp.parallel(
-    'copy_image',
-    'copy_lib',
+    copy_image_task,
+    copy_lib_task,
   ),
   gulp.parallel(
-    'scss',
+    scss_task,
     // pug
-    'pug',
-    'babelify',
+    pug_task,
+    babelify_task,
   ),
-));
+);
 
 
-gulp.task('publish-assets', () => {
+const publish_assets_task = () => {
   return gulp.src([`${paths.dist_assets}**`], { base: paths.dist_assets })
     .pipe(gulp.dest(paths.dist))
-});
+};
 
-gulp.task('publish-php', () => {
+const publish_php_task = () => {
   return gulp.src([`${paths.dist_php}**`], { base: paths.dist_php })
     .pipe(gulp.dest(paths.dist))
-});
-gulp.task('publish', gulp.series(
-  'publish-assets',
-  'publish-php',
-));
+};
 
 
-gulp.task('build', gulp.series(
-  'clean',
-  'build-each',
-  'publish',
-));
+const publish_task = gulp.series(
+  publish_assets_task,
+  publish_php_task,
+);
+exports.publish = publish_task;
 
-gulp.task('debug', gulp.series(
-  'clean',
-  'build-each',
-  'watch',
-));
+const build_task = gulp.series(
+  clean_task,
+  build_each_task,
+  publish_task,
+);
+exports.build = build_task;
 
+const watch_task = () => {
+  gulp.watch([`${paths.src_image}**/*`], copy_image_task);
+  gulp.watch([`${paths.scss}**/*.scss`], scss_task);
+  gulp.watch([`${paths.pug}**/*.pug`], pug_task);
+  // gulp.watch([paths.es6+"**/*.es6"],gulp.task('babel'))
+  gulp.watch([`${paths.es6}**/*.es6`], babelify_for_watch_task);
 
-gulp.task('default', gulp.series(
-  'debug',
-));
+  browserSync({
+    notify: false,
+    port: 3000,
+    https: IS_HTTPS,
+    server: {
+      baseDir: [paths.dist_html, paths.dist_assets, paths.raw_contents],
+      routes: {
+      },
+    },
+    ghostMode: {
+      clicks: false,
+      forms: false,
+      scroll: false,
+    },
+    watch: true,
+  });
+};
+exports.watch = watch_task;
+
+const debug_task = gulp.series(
+  clean_task,
+  build_each_task,
+  watch_task,
+);
+exports.debug = debug_task;
+
+exports.default = gulp.series(
+  debug_task,
+);
