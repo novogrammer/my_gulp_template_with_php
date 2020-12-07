@@ -1,7 +1,11 @@
-my_gulp_template
+my_gulp_template_with_php
 =====================
 
-# 自分用のgulpひな形
+# 自分用のgulpひな形のphp対応版
+
+phpでヘッダーを読み込むサイトなどに向けたもの。
+
+メンテナンスはしない予定なので https://github.com/novogrammer/my_gulp_template をベースにgulpfile.jsを改変してください。
 
 ご自由にどうぞ。
 
